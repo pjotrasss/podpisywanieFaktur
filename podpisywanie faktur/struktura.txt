@@ -1,0 +1,4 @@
+﻿1.wybranie certyfikatu - GOTOWE
+2.wybranie faktury - 
+3.otworzenie nazwy pliku wyjsciowego - wybrana faktura + "_signed" - 
+4.podpisanie faktury - 
