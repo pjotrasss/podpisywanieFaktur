@@ -1,24 +1,31 @@
-﻿Console.WriteLine("Podaj nazwę pliku do podpisania");
-var userInput = Console.ReadLine();
-if (string.IsNullOrWhiteSpace(userInput))
-    throw new ArgumentException("Nazwa pliku nie może być pusta");
+﻿using static CertificatesHelper;
+using static XmlSigner;
+using static FileHelper;
+using System.Security.Cryptography.X509Certificates;
 
-var currentDirectory = Environment.CurrentDirectory;
-//creating input file path
-var inputPath = Path.Combine(currentDirectory, userInput);
+var fullInputPath = GetPathFromUser("Podaj plik do podpisania i naciśnij Enter");
 
 //creating output  file path
-var outputFileName = $"{Path.GetFileNameWithoutExtension(userInput)}_signed.xml";
-var outputPath = Path.Combine(currentDirectory, outputFileName);
+var fullOutputPath = BuildOutputPath(fullInputPath);
 
-//wybor certyfikatu
-var certificate = CertificatesHelper.CurrentUser();
+//wybor rodzaju wczytania certyfikatu
+CertLoadMethod loadMethod = ChooseCertLoadMethod();
+
+//wczytanie certyfikatu
+X509Certificate2? certificate = loadMethod switch
+{
+    CertLoadMethod.FromFile => GetCertFromFile(),
+    CertLoadMethod.FromStore => GetCertFromStore(),
+    _ => throw new InvalidOperationException($"Nieobsłużona wartość: {loadMethod}")
+};
+
 if (certificate == null)
     return;
 
-await XmlSigner.SignXmlAsync(inputPath, outputPath, certificate);
-if (!XmlSigner.VerifySignedXml(outputPath))
+    //podpisanie Xmla
+await SignXmlAsync(fullInputPath, fullOutputPath, certificate);
+if (!VerifySignedXml(fullOutputPath))
     return;
 
-Console.WriteLine($"OK {outputPath}");
+Console.WriteLine($"OK {fullOutputPath}");
 return;

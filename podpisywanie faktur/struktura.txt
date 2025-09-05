@@ -1,4 +1,11 @@
-﻿1.wybranie certyfikatu - GOTOWE
-2.wybranie faktury - 
-3.otworzenie nazwy pliku wyjsciowego - wybrana faktura + "_signed" - 
-4.podpisanie faktury - 
+﻿Na później: switch na OOP z „fakturą” jako obiektem
+
+Model:
+	-InvoiceTask
+	-InputPath
+	-OutputPath
+	-Certificate (referencja, nie własność)
+	-Sign()
+	-Verify()
+
+W batchu lista InvoiceTask i pojedyncza konfiguracja certyfikatu.
