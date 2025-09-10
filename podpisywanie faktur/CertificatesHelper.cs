@@ -2,41 +2,24 @@
 using System.Text;
 using static InputValidationHelper;
 using static FileHelper;
+using System.ComponentModel;
 
 internal static class CertificatesHelper
 {
     internal enum CertLoadMethod
     {
-        FromFile = 1,
-        FromStore = 2
+        [Description("Załadowanie certyfikatu z pliku")]FromFile = 1,
+        [Description("Załadowanie certyfikatu z magazynu systemowego")]FromStore = 2
     }
-
-
-
-    internal static CertLoadMethod ChooseCertLoadMethod()
-    {
-        while (true)
-        {
-            Console.WriteLine("Wybierz w jaki sposob zaladowania certyfikatu i kliknij Enter");
-            Console.WriteLine("1: Zaladowanie certyfikatu z pliku");
-            Console.WriteLine("2: Zaladowanie certyfikatu z magazynu systemowego");
-
-            var userInput = Console.ReadLine();
-            int? validatedChoice = ValidateIntInput(userInput, 1, 2);
-            if (validatedChoice != null)
-                return (CertLoadMethod)validatedChoice.Value;
-        }
-    }
-
 
 
     internal static X509Certificate2 GetCertFromFile()
     {
         while (true)
         {
-            var fullPath = GetPathFromUser("Podaj ścieżkę do certyfikatu i naciśnij Enter");
+            var fullPath = GetPathFromUser("Podaj ścieżkę do certyfikatu i naciśnij Enter", true);
             
-            Console.WriteLine("Podaj hasło certyfikatu");
+            Console.WriteLine("Podaj hasło certyfikatu (pozostaw puste jeśli brak) i naciśnij Enter");
 
             //maskowanie hasla
             var passwordBuilder = new StringBuilder();
@@ -77,13 +60,11 @@ internal static class CertificatesHelper
             {
                 Console.WriteLine($"Błąd podczas wczytywania certyfikatu: {exception.Message}");
                 Console.WriteLine($"Spróbować ponownie? (t/n)");
-                var input = Console.ReadLine();
-                if (input?.ToLower() != "t")
+                if (!YesOrNo())
                     throw;
             }
         }
     }
-
 
 
     internal static X509Certificate2? GetCertFromStore()
