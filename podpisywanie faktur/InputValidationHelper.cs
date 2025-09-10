@@ -24,6 +24,7 @@
         return userInputInt;
     }
 
+
     internal static string? ValidatePathInput(string? userInput)
     {
         if (string.IsNullOrWhiteSpace(userInput))
@@ -33,5 +34,12 @@
         }
 
         return Path.GetFullPath(userInput);
+    }
+
+
+    internal static bool YesOrNo()
+    {
+        var userInput = Console.ReadLine();
+        return string.Equals(userInput?.Trim(), "t", StringComparison.OrdinalIgnoreCase);
     }
 }
