@@ -22,7 +22,7 @@ internal static class XmlSigner
         if (signedXml != null)
             await File.WriteAllTextAsync(outputPath, signedXml);
         else
-            new Exception("Wystąpił błąd podczas podpisywania pliku");
+            throw new Exception("Wystąpił błąd podczas podpisywania pliku");
         return;
     }
 
