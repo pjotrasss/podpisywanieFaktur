@@ -29,7 +29,7 @@
     {
         if (string.IsNullOrWhiteSpace(userInput))
         {
-            Console.WriteLine("Nazwa pliku nie może być pusta");
+            Console.WriteLine("Ścieżka nie może być pusta");
             return null;
         }
 
