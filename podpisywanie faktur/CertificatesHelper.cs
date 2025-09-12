@@ -1,8 +1,11 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using static InputValidationHelper;
-using static FileHelper;
+﻿using KSeFClient.Core.Models;
 using System.ComponentModel;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using static FileHelper;
+using static InputValidationHelper;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 internal static class CertificatesHelper
 {
@@ -56,6 +59,13 @@ internal static class CertificatesHelper
             {
                 return X509CertificateLoader.LoadPkcs12FromFile(fullPath, password);
             }
+            catch (CryptographicException exception)
+            {
+                Console.WriteLine($"Błąd kryptograficzny: {exception.Message}");
+                Console.WriteLine("Najczęściej: błędne hasło lub uszkodzony plik PFX. Spróbować ponownie? (t/n)");
+                if (!YesOrNo())
+                    throw;
+            }
             catch (Exception exception)
             {
                 Console.WriteLine($"Błąd podczas wczytywania certyfikatu: {exception.Message}");
@@ -100,5 +110,33 @@ internal static class CertificatesHelper
                 return certificates[certInt.Value];
             }
         }
+    }
+
+
+    internal static bool ValidateCertificate(X509Certificate2? certificate)
+    {
+        if (certificate == null)
+            return false;
+
+        if (!certificate.HasPrivateKey)
+        {
+            Console.WriteLine("Certyfikat nie zawiera klucza prywatnego");
+            return false;
+        }
+
+        if (certificate.NotAfter < DateTime.Now)
+        {
+            Console.WriteLine($"Certyfikat wygasł {certificate.NotAfter:dd-MM-yyyy} i nie może zostać użyty");
+            return false;
+        }
+
+        if (DateTime.Now < certificate.NotBefore)
+        {
+            Console.WriteLine($"Certyfikat nie jest jeszcze aktywny, data aktywacji: { certificate.NotBefore:dd - MM - yyyy}");
+            return false;
+        }
+
+        //jesli przejdzie wszystkie walidacje
+        return true;
     }
 }
