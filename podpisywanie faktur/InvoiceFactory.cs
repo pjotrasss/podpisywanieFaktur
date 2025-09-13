@@ -8,15 +8,20 @@ internal class InvoiceFactory
     {
         var invoicePaths = Directory.EnumerateFiles(directory, "*.xml", SearchOption.TopDirectoryOnly);
 
-        foreach(var path in invoicePaths)
+        var outputDirectory = PrepareOutputDirectory(directory);
+
+        foreach (var path in invoicePaths)
         {
             if (Path.GetFileNameWithoutExtension(path).EndsWith("_signed"))
+            {
+                Console.WriteLine($"Pomijanie pliku {path} - oznaczony jako podpisany");
                 continue;
+            }
 
             yield return new Invoice
             {
                 inputPath = path,
-                outputPath = AutoOutputPath(path, false),
+                outputPath = AutoOutputPath(path, false, outputDirectory),
             };
         }
     }
