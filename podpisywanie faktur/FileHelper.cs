@@ -59,11 +59,15 @@ internal static class FileHelper
     }
 
 
-    internal static string AutoOutputPath(string inputPath, bool toDir)
+    internal static string AutoOutputPath(string inputPath, bool toDir, string? outputDir)
     {
         string directory;
 
-        if (toDir)
+        if (outputDir != null)
+        {
+            directory = outputDir;
+        }
+        else if (toDir)
         {
             //pobranie katalogu od usera
             directory = GetDirFromUser("Podaj folder docelowy");
@@ -134,5 +138,27 @@ internal static class FileHelper
             Directory.CreateDirectory(fullPath);
             return fullPath;
         }
+    }
+
+
+    internal static string PrepareOutputDirectory(string inputDirectory)
+    {
+        var parentPath = Directory.GetParent(inputDirectory)!.FullName;
+        var childDir = new DirectoryInfo(inputDirectory).Name;
+
+        var baseName = $"{childDir}_signed";
+        var outputDirectory = Path.Combine(parentPath, baseName);
+
+        int counter = 1;
+        while (Directory.Exists(outputDirectory))
+        {
+            outputDirectory = Path.Combine(parentPath, $"{baseName}_{counter}");
+            counter++;
+        }
+
+        Directory.CreateDirectory(outputDirectory);
+        Console.WriteLine($"Utworzono katalog wyjściowy {outputDirectory}");
+
+        return outputDirectory;
     }
 }
