@@ -18,6 +18,7 @@ X509Certificate2? certificate = loadMethod switch
     _ => throw new InvalidOperationException($"Nieobsłużona wartość: {loadMethod}")
 };
 
+//weryfikacja certyfikatu - po tym momencie certificate =/= null
 if (!ValidateCertificate(certificate))
     return;
 
@@ -48,7 +49,7 @@ if(Directory.Exists(fullInputPath))
         try
         {
             //podpisanie pliku
-            await SignXmlAsync(invoice.inputPath, invoice.outputPath, certificate);
+            await SignXmlAsync(invoice.inputPath, invoice.outputPath, certificate!);
 
             //nieudana weryfikacja podpisu
             if (!VerifySignedXml(invoice.outputPath))
@@ -80,9 +81,9 @@ else
     //stworzenie sciezki podpisanej faktury
     var fullOutputPath = outputMethod switch
     {
-        OutputPathMethod.Auto => AutoOutputPath(fullInputPath, false),
+        OutputPathMethod.Auto => AutoOutputPath(fullInputPath, false, null),
         OutputPathMethod.Manual => GetPathFromUser("Podaj nazwę lub pełną ścieżkę zapisu podpisanej faktury i naciśnij Enter", false),
-        OutputPathMethod.AutoToFolder => AutoOutputPath(fullInputPath, true),
+        OutputPathMethod.AutoToFolder => AutoOutputPath(fullInputPath, true, null),
         _ => throw new InvalidOperationException($"Nieobsłużona wartość: {outputMethod}")
     };
 
